@@ -14,7 +14,11 @@ interface PromptsType {
   template: string
 }
 
-export function PromptSelect() {
+interface PromptSelectProps {
+  onPromptSelect: (template: string) => void
+}
+
+export function PromptSelect({ onPromptSelect }: PromptSelectProps) {
   const [prompts, setPrompts] = useState<PromptsType[] | []>([])
 
   useEffect(() => {
@@ -23,8 +27,18 @@ export function PromptSelect() {
     })
   }, [])
 
+  function handlePromptSelected(promptId: string) {
+    const selectedPrompt = prompts.find((prompt) => prompt.id === promptId)
+
+    if (!selectedPrompt) {
+      return
+    }
+
+    onPromptSelect(selectedPrompt.template)
+  }
+
   return (
-    <Select>
+    <Select onValueChange={handlePromptSelected}>
       <SelectTrigger className="rounded">
         <SelectValue placeholder="Selecione um prompt..." />
       </SelectTrigger>
@@ -32,7 +46,7 @@ export function PromptSelect() {
       <SelectContent>
         {prompts.map((prompt) => {
           return (
-            <SelectItem key={prompt.id} value={prompt.template}>
+            <SelectItem key={prompt.id} value={prompt.id}>
               {prompt.title}
             </SelectItem>
           )
